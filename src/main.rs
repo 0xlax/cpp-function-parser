@@ -16,12 +16,16 @@ struct Function {
 
 fn parse_cpp_function_syntax(input: &str) -> Option<Function> {
     let function_pattern = r"\w+::(\w+)\(([^)]*)\)";
+
     let arg_pattern = r"([\w:]+(?:\s*\*|&)?)(?:\s*\*)?\s*(\w+)\s*";
 
+
     let function_regex = Regex::new(function_pattern).unwrap();
+
     let arg_regex = Regex::new(arg_pattern).unwrap();
 
     let captures = function_regex.captures(input)?;
+    // println!("Captures: {:?}", captures);
 
     let object_name = captures.get(1)?.as_str().to_string();
     let function_name = captures.get(0)?.as_str().to_string();
@@ -29,7 +33,7 @@ fn parse_cpp_function_syntax(input: &str) -> Option<Function> {
     let arg_list = captures.get(2)?.as_str();
     let mut largs = Vec::new();
     for captures in arg_regex.captures_iter(arg_list) {
-        let arg_type = captures.get(1)?.as_str().to_string();
+        let arg_type = captures.get(1)?.as_str().replace(" ", "").to_string();
         let arg_name = captures.get(2)?.as_str().to_string();
 
         largs.push(Argument {
